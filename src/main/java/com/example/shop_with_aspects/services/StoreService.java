@@ -6,6 +6,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class StoreService {
 
@@ -14,14 +17,25 @@ public class StoreService {
 
     @Transactional
     public void addToMainStore(Long id ,int quantity) throws Exception {
-        Product product = productRepo.getProductById(id);
+        Product product = productRepo.getReferenceById(id);
         product.delFromReserveStore(quantity);
         product.addToMainStore(quantity);
     }
     @Transactional
     public void addToReserveStore(Long id ,int quantity) throws Exception {
-        Product product = productRepo.getProductById(id);
-        product.delFromMainStore(quantity);
-        product.addToReserveStore(quantity);
+        Optional<Product> optionalProduct = productRepo.findById(id);
+        if(optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            product.delFromMainStore(quantity);
+            product.addToReserveStore(quantity);
+            productRepo.save(product);
+        }
+    }
+
+    public List<Product> getAllProducts(){
+        return productRepo.findAll();
+    }
+    public void addProduct(Product product){
+        productRepo.save(product);
     }
 }
