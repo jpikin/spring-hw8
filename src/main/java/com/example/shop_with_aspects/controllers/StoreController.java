@@ -1,5 +1,8 @@
 package com.example.shop_with_aspects.controllers;
 
+import com.example.shop_with_aspects.exeptions.NotEnoughMoneyException;
+import com.example.shop_with_aspects.exeptions.NotEnoughQuantityException;
+import com.example.shop_with_aspects.exeptions.ReserveStoreIsEmptyException;
 import com.example.shop_with_aspects.models.Product;
 import com.example.shop_with_aspects.services.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +27,13 @@ public class StoreController {
 
 
     @PutMapping("/reserve/{id}")
-    public List<Product> productReserve(@PathVariable Long id, @RequestParam int quantity) throws Exception {
+    public List<Product> productReserve(@PathVariable Long id, @RequestParam int quantity) throws NotEnoughQuantityException {
         service.addToReserveStore(id, quantity);
         return service.getAllProducts();
     }
-    @PostMapping("/main/{id}")
-    public void productMain(@PathVariable Long id, @RequestParam int quantity) throws Exception {
-        service.addToMainStore(id, quantity);
+
+    @GetMapping("/buy")
+    public void buyProduct() throws NotEnoughMoneyException, ReserveStoreIsEmptyException {
+        service.buyProduct();
     }
 }

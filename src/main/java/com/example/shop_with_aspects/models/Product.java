@@ -25,7 +25,7 @@ public class Product {
         mainStore += quantity;
     }
 
-    public void delFromMainStore(int quantity) throws Exception {
+    public void delFromMainStore(int quantity) throws NotEnoughQuantityException {
         if (quantity <= mainStore) {
             mainStore -= quantity;
             } else {
