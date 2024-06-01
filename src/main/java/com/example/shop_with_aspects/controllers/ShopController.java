@@ -4,17 +4,17 @@ import com.example.shop_with_aspects.exeptions.NotEnoughMoneyException;
 import com.example.shop_with_aspects.exeptions.NotEnoughQuantityException;
 import com.example.shop_with_aspects.exeptions.ReserveStoreIsEmptyException;
 import com.example.shop_with_aspects.models.Product;
-import com.example.shop_with_aspects.services.StoreService;
+import com.example.shop_with_aspects.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-public class StoreController {
+public class ShopController {
 
     @Autowired
-    private StoreService service;
+    private ShopService service;
 
     @GetMapping
     public List<Product> getAllProducts(){
@@ -32,8 +32,9 @@ public class StoreController {
         return service.getAllProducts();
     }
 
-    @GetMapping("/buy")
-    public void buyProduct() throws NotEnoughMoneyException, ReserveStoreIsEmptyException {
-        service.buyProduct();
+    @GetMapping("/buy/{id}")
+    public List<Product> buyProduct(@PathVariable Long id) throws NotEnoughMoneyException, ReserveStoreIsEmptyException {
+        service.buyProduct(id);
+        return service.getAllProducts();
     }
 }

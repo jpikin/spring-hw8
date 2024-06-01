@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class StoreService {
+public class ShopService {
 
     @Autowired
     private ProductRepo productRepo;
@@ -23,7 +23,6 @@ public class StoreService {
     private Person person;
     @Autowired
     private Shop shop;
-    @Autowired
     private double cost;
 
     @Transactional
@@ -44,13 +43,21 @@ public class StoreService {
         }
     }
 
-    public void buyProduct() throws NotEnoughMoneyException, ReserveStoreIsEmptyException {
-        if (cost != 0) buyProductTransaction();
+    public void buyProduct(Long id) throws NotEnoughMoneyException, ReserveStoreIsEmptyException {
+        if (cost != 0) {
+            buyProductTransaction();
+            Optional<Product> optionalProduct = productRepo.findById(id);
+            if(optionalProduct.isPresent()) {
+                Product product = optionalProduct.get();
+                product.setReserveStore(0);
+                productRepo.save(product);
+            }
+        }
         else throw new ReserveStoreIsEmptyException();
     }
 
     @Transactional
-    public void buyProductTransaction() throws NotEnoughMoneyException {
+    private void buyProductTransaction() throws NotEnoughMoneyException {
         delMoneyFromPersonAccount(cost);
         addMoneyToShopAccount(cost);
     }
