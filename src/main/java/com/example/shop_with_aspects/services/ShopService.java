@@ -6,6 +6,7 @@ import com.example.shop_with_aspects.exeptions.ReserveStoreIsEmptyException;
 import com.example.shop_with_aspects.models.Person;
 import com.example.shop_with_aspects.models.Product;
 import com.example.shop_with_aspects.models.Shop;
+import com.example.shop_with_aspects.repositories.PersonRepo;
 import com.example.shop_with_aspects.repositories.ProductRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class ShopService {
     private ProductRepo productRepo;
     @Autowired
     private Person person;
+    @Autowired
+    private PersonRepo personRepo;
     @Autowired
     private Shop shop;
     private double cost;
@@ -43,9 +46,9 @@ public class ShopService {
         }
     }
 
-    public void buyProduct(Long id) throws NotEnoughMoneyException, ReserveStoreIsEmptyException {
+    public void buyProduct(Long id, Long personId) throws NotEnoughMoneyException, ReserveStoreIsEmptyException {
         if (cost != 0) {
-            buyProductTransaction();
+            buyProductTransaction(personId);
             Optional<Product> optionalProduct = productRepo.findById(id);
             if(optionalProduct.isPresent()) {
                 Product product = optionalProduct.get();
@@ -57,18 +60,21 @@ public class ShopService {
     }
 
     @Transactional
-    private void buyProductTransaction() throws NotEnoughMoneyException {
-        delMoneyFromPersonAccount(cost);
+    private void buyProductTransaction(Long personId) throws NotEnoughMoneyException {
+        delMoneyFromPersonAccount(cost, personId);
         addMoneyToShopAccount(cost);
     }
 
     public List<Product> getAllProducts(){
         return productRepo.findAll();
     }
+
     public void addProduct(Product product){
         productRepo.save(product);
     }
-    public void delMoneyFromPersonAccount(double cost) throws NotEnoughMoneyException {
+
+    public void delMoneyFromPersonAccount(double cost, Long personId) throws NotEnoughMoneyException {
+        person = personRepo.getReferenceById(personId);
         if (cost <= person.getAccount()) {
             person.setAccount(person.getAccount() - cost);
             } else {
@@ -78,4 +84,5 @@ public class ShopService {
     public void addMoneyToShopAccount(double cost){
         shop.setAccount(shop.getAccount() + cost);
     }
+
 }
