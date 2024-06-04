@@ -16,7 +16,7 @@ public class PersonController {
     @Autowired
     private PersonService service;
 
-    @GetMapping("/person")
+    @GetMapping("/persons")
     private List<Person> getAllPersons(){
         return service.getAllPersons();
     }

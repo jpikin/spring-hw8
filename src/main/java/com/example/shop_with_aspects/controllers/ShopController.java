@@ -19,7 +19,7 @@ public class ShopController {
     @Autowired
     private PersonService personService;
 
-    @GetMapping
+    @GetMapping("/products")
     public List<Product> getAllProducts(){
         return service.getAllProducts();
     }

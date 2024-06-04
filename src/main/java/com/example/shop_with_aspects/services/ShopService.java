@@ -21,8 +21,6 @@ public class ShopService {
     @Autowired
     private ProductRepo productRepo;
     @Autowired
-    private Person person;
-    @Autowired
     private PersonRepo personRepo;
     @Autowired
     private Shop shop;
@@ -45,7 +43,6 @@ public class ShopService {
             cost = product.getPrice()*product.getReserveStore();
         }
     }
-
     public void buyProduct(Long id, Long personId) throws NotEnoughMoneyException, ReserveStoreIsEmptyException {
         if (cost != 0) {
             buyProductTransaction(personId);
@@ -74,7 +71,7 @@ public class ShopService {
     }
 
     public void delMoneyFromPersonAccount(double cost, Long personId) throws NotEnoughMoneyException {
-        person = personRepo.getReferenceById(personId);
+        Person person = personRepo.getReferenceById(personId);
         if (cost <= person.getAccount()) {
             person.setAccount(person.getAccount() - cost);
             } else {
